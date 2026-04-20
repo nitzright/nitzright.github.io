@@ -22,8 +22,11 @@
       overflow-x: hidden;
     }
 
-    #particles-js {
+    /* SNOW CANVAS */
+    #snow {
       position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       z-index: -1;
@@ -34,18 +37,14 @@
       max-width: 900px;
       margin: auto;
       background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       border-radius: 20px;
       margin-top: 40px;
     }
 
     h1 {
       font-size: 3rem;
-      text-shadow: 0 0 10px #00f, 0 0 20px #0ff;
-    }
-
-    h2 {
-      margin-bottom: 20px;
+      text-shadow: 0 0 10px #00f, 0 0 30px #0ff;
     }
 
     .btn {
@@ -97,7 +96,7 @@
 
 <body>
 
-<div id="particles-js"></div>
+<canvas id="snow"></canvas>
 <div class="cursor"></div>
 
 <!-- HERO -->
@@ -110,7 +109,7 @@
 <!-- ABOUT -->
 <section id="about" data-aos="fade-up">
   <h2>About Me</h2>
-  <p>I am a solo creator who loves tech, design, and internet. I enjoy building modern websites and exploring new ideas.</p>
+  <p>I am a solo creator who loves tech, design, and internet.</p>
 </section>
 
 <!-- PROJECTS -->
@@ -119,11 +118,11 @@
   <div class="projects">
     <div class="card">
       <h3>Portfolio Website</h3>
-      <p>Modern animated portfolio with dark UI.</p>
+      <p>Modern animated portfolio.</p>
     </div>
     <div class="card">
       <h3>Landing Page</h3>
-      <p>High-converting modern design.</p>
+      <p>High-converting design.</p>
     </div>
   </div>
 </section>
@@ -134,35 +133,86 @@
   <p>Email: your@email.com</p>
 </section>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script>
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 80 },
-    size: { value: 3 },
-    move: { speed: 0.5 },
-    color: { value: "#ffffff" }
-  }
-});
-</script>
-
+<!-- AOS -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
 AOS.init();
 </script>
 
+<!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
 gsap.from("h1", { y: -50, opacity: 0, duration: 1 });
 gsap.from("p", { opacity: 0, delay: 0.5, duration: 1 });
 </script>
 
+<!-- CURSOR -->
 <script>
 document.addEventListener("mousemove", (e) => {
   const cursor = document.querySelector(".cursor");
   cursor.style.left = e.pageX + "px";
   cursor.style.top = e.pageY + "px";
+});
+</script>
+
+<!-- 🎬 CINEMATIC SNOW -->
+<script>
+const canvas = document.getElementById("snow");
+const ctx = canvas.getContext("2d");
+
+let w = window.innerWidth;
+let h = window.innerHeight;
+
+canvas.width = w;
+canvas.height = h;
+
+let snowflakes = [];
+
+for (let i = 0; i < 250; i++) {
+  snowflakes.push({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: Math.random() * 4 + 1,
+    speed: Math.random() * 1 + 0.5,
+    opacity: Math.random(),
+    drift: Math.random() * 0.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, w, h);
+
+  for (let f of snowflakes) {
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255," + f.opacity + ")";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "white";
+    ctx.fill();
+  }
+
+  update();
+}
+
+function update() {
+  for (let f of snowflakes) {
+    f.y += f.speed;
+    f.x += Math.sin(f.y * 0.01) * f.drift;
+
+    if (f.y > h) {
+      f.y = 0;
+      f.x = Math.random() * w;
+    }
+  }
+}
+
+setInterval(draw, 25);
+
+window.addEventListener("resize", () => {
+  w = window.innerWidth;
+  h = window.innerHeight;
+  canvas.width = w;
+  canvas.height = h;
 });
 </script>
 
